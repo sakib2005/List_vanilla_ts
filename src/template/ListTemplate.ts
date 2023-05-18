@@ -1,52 +1,58 @@
 import FullList from "../model/fullList";
 
-interface DOM_Element {
-  ul: HTMLDListElement;
+interface DOMList {
+  ul: HTMLUListElement;
   clear(): void;
   render(fullList: FullList): void;
 }
 
-export default class ListTemplate implements DOM_Element {
-  ul: HTMLDListElement;
+export default class ListTemplate implements DOMList {
+  ul: HTMLUListElement;
 
   static instance: ListTemplate = new ListTemplate();
-  constructor() {
-    this.ul = document.getElementById("ListItems") as HTMLDListElement;
+
+  private constructor() {
+    this.ul = document.getElementById("listItems") as HTMLUListElement;
   }
+
   clear(): void {
     this.ul.innerHTML = "";
   }
+
   render(fullList: FullList): void {
     this.clear();
 
-    fullList.list.forEach((Item) => {
-      const li = document.createElement("li");
+    fullList.list.forEach((item) => {
+      const li = document.createElement("li") as HTMLLIElement;
       li.className = "item";
-      const check = document.createElement("input");
-      li.className = "checkbox";
-      check.id = Item.id;
-      check.tabIndex = 0;
-      check.checked = Item.checked;
+
+      const check = document.createElement("input") as HTMLInputElement;
+      check.type = "checkbox";
+      check.id = item.id;
+      check.checked = item.checked;
       li.append(check);
 
       check.addEventListener("change", () => {
-        Item.checked = !Item.checked;
+        item.checked = !item.checked;
         fullList.save();
       });
-      const label = document.createElement("label");
-      label.htmlFor = Item.id;
-      label.textContent = Item.item;
-      label.append;
-      const btn = document.createElement("button");
-      btn.className = "button";
-      btn.textContent = "X";
-      btn.append(btn);
-      btn.addEventListener("click", () => {
-        fullList.removeItem(Item.id);
-        // doesn't create a infinite loop because its running in a event listener
+
+      const label = document.createElement("label") as HTMLLabelElement;
+      label.htmlFor = item.id;
+      label.textContent = item.item;
+      li.append(label);
+
+      const button = document.createElement("button") as HTMLButtonElement;
+      button.className = "button";
+      button.textContent = "X";
+      li.append(button);
+
+      button.addEventListener("click", () => {
+        fullList.removeItem(item.id);
         this.render(fullList);
       });
-      this.ul.append(label);
+
+      this.ul.append(li);
     });
   }
 }
