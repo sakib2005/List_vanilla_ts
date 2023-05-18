@@ -3,33 +3,51 @@ import FullList from "./model/fullList";
 import ListItem from "./model/listItem";
 import ListTemplate from "./template/ListTemplate";
 
-const idealizeApp = (): void => {
+const initApp = (): void => {
   const fullList = FullList.instance;
   const template = ListTemplate.instance;
 
+  // Add listener to new entry form submit
   const itemEntryForm = document.getElementById(
     "itemEntryForm"
   ) as HTMLFormElement;
-  itemEntryForm?.addEventListener("submit", (event: SubmitEvent) => {
-    event.defaultPrevented;
+
+  itemEntryForm.addEventListener("submit", (event: SubmitEvent): void => {
+    event.preventDefault();
+
+    // Get the new item value
     const input = document.getElementById("newItem") as HTMLInputElement;
-    const newEntryTxt: string = input.value.trim();
-    if (!newEntryTxt.length) return;
-    const itemId: Number = fullList.list.length
+    const newEntryText: string = input.value.trim();
+    if (!newEntryText.length) return;
+
+    // calculate item ID
+    const itemId: number = fullList.list.length
       ? parseInt(fullList.list[fullList.list.length - 1].id) + 1
       : 1;
-    const newItem = new ListItem(itemId.toString(), newEntryTxt);
+
+    // create new item
+    const newItem = new ListItem(itemId.toString(), newEntryText);
+    // Add new item to full list
     fullList.addItem(newItem);
+    // Re-render list with new item included
     template.render(fullList);
   });
-  const clearItemBtn = document.getElementById(
-    "clearItemButton"
+
+  // Add listener to "Clear" button
+  const clearItems = document.getElementById(
+    "clearItemsButton"
   ) as HTMLButtonElement;
-  clearItemBtn.addEventListener("click", () => {
+
+  clearItems.addEventListener("click", (): void => {
     fullList.clearList();
     template.clear();
   });
+
+  // load initial data
   fullList.load();
+  // initial render of template
   template.render(fullList);
 };
-document.addEventListener("DOMContentLoaded", idealizeApp);
+
+document.addEventListener("DOMContentLoaded", initApp);
+document.addEventListener("DOMContentLoaded", initApp);
